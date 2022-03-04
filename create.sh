@@ -60,7 +60,21 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     echo "</body>
 </html>" > .labnotebook/footer.html
 
-    eval $(echo mv .labnotebook/notebook.html .labnotebook/$1.html)
+    # Create CSS
+    echo -e "
+h1 {
+    color: red;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+h3 {
+    font-weight: bold;
+}
+    " > .labnotebook/labstyles.css
     
     ##------ ASK FOR GITIGNORE ------##
 
