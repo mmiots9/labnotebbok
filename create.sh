@@ -72,7 +72,7 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
 
     ##------ CONFIRMATION MESSAGE ------##
 
-    echo -e "\n$green.labnotebook/$1.html labnotebook succesfully created$ncol\n$red Mandatory: when updating the notebook, make sure you are in $(pwd)\n Never change .labnotebook folder name $ncol"
+    echo -e "\n$green .labnotebook folder succesfully created\n$red Mandatory: when updating the notebook, make sure you are in $(pwd)\n Never change .labnotebook folder name or content $ncol"
 
 }
 
