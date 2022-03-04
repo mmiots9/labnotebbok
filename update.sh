@@ -21,15 +21,8 @@ updatenotebook (){
     # Source config file
     source .labnotebook/config
 
-    # html
-    if [[ $(find .labnotebook -iname $NOTEBOOK_NAME.html 2>&1 | grep -v 'No such file' | wc -l) -eq 0 ]]
-    then
-    echo -e "Error: There is not an .html file in .labnotebook matching NOTEBOOK_NAME variable from config.\nIf you have changed the name of the notebook, please change it also in config file."
-    return
-    fi
-
     ##------ CONFIRMATION ------##
-    echo "Are you sure you want to update .labnotebook/$NOTEBOOK_NAME.html?"
+    echo "Are you sure you want to update $NOTEBOOK_NAME labnotebook?"
     select yn in "Yes" "No"; do
     case $yn in
         Yes ) echo "updating..."; break;;
@@ -38,25 +31,35 @@ updatenotebook (){
     done
 
     ##------ CHECK LAST COMMIT AND CREATE TEMP WITH COMMITS------##
-    if [[ $LASTCOMMIT -eq "no" ]]
+    if [[ $LAST_COMMIT == "no" ]]
     then
     git log --oneline --reverse | awk '{print $1}' > .labnotebook/.tempCommitList.txt
+    isno=1
     else
         # Check if $LASTCOMMIT is in commit history
-        if [[ $(git log --oneline | awk '{print $1}' | grep $LASTCOMMIT | wc -l) -eq 0 ]]
+        if [[ $(git log --oneline | awk '{print $1}' | grep $LAST_COMMIT | wc -l) -eq 0 ]]
         then
-        echo -e "$red Error: Last commit used for the labnotebook ($LASTCOMMIT) is not in current git log.$ncol
+        echo -e "$red Error: Last commit used for the labnotebook ($LAST_COMMIT) is not in current git log.$ncol
         It is possible that you have changed commit history. Please check your git log and insert the commit sha to use in config file.
         "
         return
         fi
     # Create temporary from lastcommit
-    git log --oneline $LASTCOMMIT..HEAD --reverse | awk '{print $1}' > .labnotebook/.tempCommitList.txt
+    git log --oneline $LAST_COMMIT..HEAD --reverse | awk '{print $1}' > .labnotebook/.tempCommitList.txt
+    fi
+    
+
+    # Check if file is empty: LAST_COMMIT is the last commit yet
+    nlines=$(cat .labnotebook/.tempCommitList.txt | wc -l | xargs)
+
+    if [[ nlines -eq 0 ]]
+    then
+    yellow='\033[1;33m'
+    echo -e "$yellow Warning: LAST_COMMIT is already the last commit in history"
+    return
     fi
 
-    ## WRITE IN A TEMP FILE
 
-    nlines=$(cat .labnotebook/.tempCommitList.txt | wc -l | xargs)
 
     for i in {1..$nlines}; do
     
@@ -65,56 +68,61 @@ updatenotebook (){
         comsha=$(head -n $i .labnotebook/.tempCommitList.txt | tail -n 1)
 
         # get all info
-        if [[ i -eq 1 ]]
+        if [[ isno -eq 1 ]]
         then
         gday=$(echo $(git log $comsha --pretty=format:"%cs")) # day
         gwhat=$(echo $(git log $comsha --pretty=format:"%s")) # what
         gmessage=$(echo $(git log $comsha --pretty=format:"%b")) # message
         gchanges=$(echo $(git log --pretty="format:" --name-status $comsha)) # changes
-
-
-        # check if SHOW_ANALYSIS_FILE
-        if [[ $SHOW_ANALYSIS_FILE -eq "yes" ]]
-        then
-        # choose filename
-        echo -e "\ncommit: $comsha \nmessage: $gwhat"
-        echo "Which is the analyses file with info about what you've done?"
-        echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}'
-        read fileans
-
-        ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | awk -v fileans="$fileans" '{if ($1 == fileans) print $2}')
-        fi
         else
           gday=$(echo $(git log $comsha^..$comsha --pretty=format:"%cs")) # day
           gwhat=$(echo $(git log $comsha^..$comsha --pretty=format:"%s")) # what
           gmessage=$(echo $(git log $comsha^..$comsha --pretty=format:"%b")) # message
           gchanges=$(echo $(git log --pretty="format:" --name-status $comsha^..$comsha)) # changes
+        fi
 
-          # check if SHOW_ANALYSIS_FILE
-              if [[ $SHOW_ANALYSIS_FILE -eq "yes" ]]
-              then
-              # choose filename
-              echo -e "\ncommit: $comsh \nmessage:$gwat"
-              echo "Which is the analyses file with info about what you've done?" 
-              echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}'
-              read fileans
-
-              ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | awk -v fileans="$fileans" '{if ($1 == fileans) print $2}')
-              fi
+        # check if SHOW_ANALYSIS_FILE
+        if [[ $SHOW_ANALYSIS_FILES == "yes" ]]
+        then
+        # choose analysis filename
+        echo -e "\ncommit: $comsha \nmessage: $gwhat"
+        echo "Which is the analyses file with info about what you've done?" 
+        echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}'
+        read fileans
+        ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | awk -v fileans="$fileans" '{if ($1 == fileans) print $2}')
         fi
         
-        ##------ WRITE TEMP FILE ------##
-        
-        # delete </body> </html> from notebook
-        grep -ve "^</html>" .labnotebook/$NOTEBOOK_NAME.html | grep -ve "^</body>" > .labnotebook/temp.$NOTEBOOK_NAME.html
-        
+        ##------ WRITE BODY ------##
         # Insert day if is different
-        if [[ lastday -ne $gday ]] 
+        if [[ $LAST_DAY != $gday ]] 
         then 
-        echo "<h2 style='text-align: center;'>$gday</h1>" >> .labnotebook/temp.$NOTEBOOK_NAME.html
+        echo -e "\n<h2>$gday</h2>" >> .labnotebook/body.html
         fi
-        
+
+        # Insert all other info
+        echo "
+<h3>$gwhat</h3>
+<p>$gmessage</p>
+<p>sha: $comsha</p>
+<p>Analysis file: $ganalysis</p>
+
+<details>
+  <summary>Affected files</summary>
+  $(echo $gchanges | awk '{print "<li>", $0, "</li>"}')
+</details>" >> .labnotebook/body.html
+
+
+        # UPDATE DATE
+        LAST_DAY=$gday
     done
 
-#     # git log f3f2^..f3f2
+##------ UPDATE LASTCOMMIT IN CONFIG ------## 
+sed -i '' "s/LAST_COMMIT=.*/LAST_COMMIT=$comsha/" .labnotebook/config
+
+##------ UPDATE LASTDAY in CONFIG ------## 
+sed -i '' "s/LAST_DAY=.*/LAST_DAY=$gday/" .labnotebook/config
+
+##------ DELETE TEMPCOMMIT ------## 
+rm .labnotebook/.tempCommitList.txt
+
 }
