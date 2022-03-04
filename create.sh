@@ -32,7 +32,11 @@ createnotebook (){
     
     # Create config
     echo -e "NOTEBOOK_NAME=$1
-    LASTCOMMIT=no" > .labnotebook/config 
+LAST_COMMIT=no
+LAB_AUTHOR=\"$aut\"
+LAST_DAY=no
+SHOW_ANALYSIS_FILES=yes
+LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config 
 
     # Create notebook
     echo "<\!DOCTYPE html>
