@@ -38,7 +38,7 @@ LAST_DAY=no
 SHOW_ANALYSIS_FILES=yes
 LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config 
 
-    # Create notebook
+    # Create HEAD
     echo "<\!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -46,14 +46,17 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>$1 Lab notebook</title>
-</head>
-<body>
-<h1 style='text-align: center;'>$1 lab notebook</h1>
+</head>" | awk '{print $0}' > .labnotebook/head.html
+    
+    # Create BODY
+    echo "<body>
+<h1>$1 lab notebook</h1>
 <p>Created on: $today</p>
-<p>Author: $aut</p>
-</body>
-</html>
-    " > .labnotebook/notebook.html
+<p>Author: $aut</p>" > .labnotebook/body.html
+    
+    # Create FOOTER
+    echo "</body>
+</html>" > .labnotebook/footer.html
 
     eval $(echo mv .labnotebook/notebook.html .labnotebook/$1.html)
     
