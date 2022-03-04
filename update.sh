@@ -44,6 +44,7 @@ updatenotebook (){
         "
         return
         fi
+    isno=0
     # Create temporary from lastcommit
     git log --oneline $LAST_COMMIT..HEAD --reverse | awk '{print $1}' > .labnotebook/.tempCommitList.txt
     fi
@@ -114,6 +115,8 @@ updatenotebook (){
 
         # UPDATE DATE
         LAST_DAY=$gday
+
+        isno=0
     done
 
 ##------ UPDATE LASTCOMMIT IN CONFIG ------## 
