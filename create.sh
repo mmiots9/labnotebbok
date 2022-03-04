@@ -45,11 +45,13 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     <meta charset=\"UTF-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>$1 Lab notebook</title>
-</head>" | awk '{print $0}' > .labnotebook/head.html
+    <title>$1 Lab notebook</title>" | awk '{print $0}' > .labnotebook/head.html
+
+ sed -i '' 's/\\//' .labnotebook/head.html
     
     # Create BODY
-    echo "<body>
+    echo "</head>
+<body>
 <h1>$1 lab notebook</h1>
 <p>Created on: $today</p>
 <p>Author: $aut</p>" > .labnotebook/body.html
