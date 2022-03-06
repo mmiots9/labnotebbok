@@ -102,8 +102,8 @@ p {
     echo "Do you wish to add .notebook folder to .gitignore?"
     select yn in "Yes" "No"; do
     case $yn in
-        Yes ) echo ".labnotebook/*" >> .gitignore; break;;
-        No ) echo ".notebook folder will be tracked by git"; break;;
+        Yes ) echo ".labnotebook/*" >> .gitignore; echo "LAB_IGNORE=yes" >> .labnotebook/config; break;;
+        No ) echo ".notebook folder will be tracked by git"; echo "LAB_IGNORE=no" >> .labnotebook/config; break;;
     esac
     done
 
