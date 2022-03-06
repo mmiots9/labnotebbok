@@ -65,14 +65,35 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
 h1 {
     color: red;
     text-align: center;
+    font-size: 2.5em;
 }
 
 h2 {
     text-align: center;
+    border: 1px solid red;
+    font-size: 1.875em;
 }
 
 h3 {
     font-weight: bold;
+    margin: 1em 0em 0.2em 0em;
+    font-size: 1.2em;
+}
+
+details {
+	font-size: 1em;
+	cursor: pointer;
+	display: inline
+}
+
+details > li {
+  padding-left: 2em;
+  font-size: 1em;
+}
+
+p {
+  margin: 0.2em 0em;
+  font-size: 1em;
 }
     " > .labnotebook/labstyles.css
     
