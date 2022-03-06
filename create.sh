@@ -22,7 +22,7 @@ createnotebook (){
     mkdir .labnotebook
 
     ##------ USEFUL VARIABLES ------##   
-    today=$(date +'%b %d %Y')
+    today=$(date +'%Y-%m-%d')
     aut=$(git config --get user.name)
     red='\033[0;31m'
     green='\033[0;32m'
