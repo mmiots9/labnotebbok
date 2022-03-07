@@ -104,7 +104,7 @@ updatenotebook (){
         echo "Which is the analyses file with info about what you've done?" 
         echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}'
         read fileans
-        ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | awk -v fileans="$fileans" '{if ($1 == fileans) print $2}')
+        ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | awk -v fileans="$fileans" '{if ($1 == fileans) print "<code>" $2 "</code>"}')
         fi
         
         ##------ WRITE BODY ------##
