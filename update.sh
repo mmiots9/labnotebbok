@@ -88,12 +88,12 @@ updatenotebook (){
         gday=$(echo $(git log $comsha --pretty=format:"%cs")) # day
         gwhat=$(echo $(git log $comsha --pretty=format:"%s")) # what
         gmessage=$(echo $(git log $comsha --pretty=format:"%b")) # message
-        gchanges=$(echo $(git log --pretty="format:" --name-status $comsha)) # changes
+        gchanges=$(git log --pretty="format:" --name-status $comsha) # changes
         else
           gday=$(echo $(git log $comsha^..$comsha --pretty=format:"%cs")) # day
           gwhat=$(echo $(git log $comsha^..$comsha --pretty=format:"%s")) # what
           gmessage=$(echo $(git log $comsha^..$comsha --pretty=format:"%b")) # message
-          gchanges=$(echo $(git log --pretty="format:" --name-status $comsha^..$comsha)) # changes
+          gchanges=$(git log --pretty="format:" --name-status $comsha^..$comsha) # changes
         fi
 
         # check if SHOW_ANALYSIS_FILE
