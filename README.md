@@ -1,6 +1,6 @@
 <h1 align="center">Labnotebook 📔🖥</h1>
 
-This project aims to help bioinformaticians in creating the so called "Laboratory notebook" in an automatic way. 
+This project aims to help bioinformaticians in creating the so called "Laboratory notebook" in an automatic way.  You can find a detailed article  <a href='https://miotsdata.netlify.app/en/bash/mie_funzioni/labnotebook/' target='_blank'>here</a>.
 
 **IMPORTANT**: this tools is based on git and its application, you need to commit things and changes to be able to use this tool. 
 In fact, based on git history, it will create an html notebook divided by date and commit.
@@ -19,7 +19,7 @@ To install these functions, I strongly reccomend to download the entire folder a
 for file in ~/path-to-folder/*.sh; do source "$file"; done
 ```
 <h3>Notebook structure</h3>
-The structure of the notebook is very simple. You can see an example <a href='./example.html' target='_blank'>here</a>.
+The structure of the notebook is very simple. You can see an example <a href='https://miotsdata.netlify.app/it/bash/mie_funzioni/example.html' target='_blank'>here</a>.
 
 On top, you have the notebook name, the author and the date of creation. Then, for each day, you have a list of all the commits done, organized as follow:
 <li>Commit message (first line)</li>
