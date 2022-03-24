@@ -97,7 +97,7 @@ updatenotebook (){
         fi
 
         # check if SHOW_ANALYSIS_FILE
-        if [[ $SHOW_ANALYSIS_FILES == "yes" ]]
+        if [[ $ASK_ANALYSIS_FILES == "yes" ]]
         then
         # choose analysis filename
         echo -e "\ncommit: $comsha \nmessage: $gwhat"
