@@ -112,15 +112,15 @@ updatenotebook (){
         # Insert day if is different
         if [[ $LAST_DAY != $gday ]] 
         then 
-        echo -e "\n<h2>$gday</h2>" >> .labnotebook/body.html
+        echo -e "\n<h2 class='day-el'>$gday</h2>" >> .labnotebook/body.html
         fi
 
         # Insert all other info
         echo "
-<h3>$gwhat</h3>
-<p>$gmessage</p>
-<p>sha: $comsha</p>
-<p>Analysis file: $ganalysis</p>
+<h3 class='what-el'>$gwhat</h3>
+<p class='mess-el'>$gmessage</p>
+<p class='sha-el'>sha: $comsha</p>
+<p class='analyses-el'>Analysis file: $ganalysis</p>
 
 <details>
   <summary>Affected files</summary>

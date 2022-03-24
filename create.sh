@@ -53,9 +53,9 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     # Create BODY
     echo "</head>
 <body>
-<h1>$1 lab notebook</h1>
-<p>Created on: $today</p>
-<p>Author: $aut</p>" > .labnotebook/body.html
+<h1 id='labtitle'>$1 lab notebook</h1>
+<p id='creationdate'>Created on: $today</p>
+<p id='labauthor'>Author: $aut</p>" > .labnotebook/body.html
     
     # Create FOOTER
     echo "</body>
