@@ -96,6 +96,10 @@ p {
   margin: 0.2em 0em;
   font-size: 1em;
 }
+
+.analyses-el {
+    display: block;
+}
     " > .labnotebook/labstyles.css
     
     ##------ ASK FOR GITIGNORE ------##
