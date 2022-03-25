@@ -124,7 +124,7 @@ updatenotebook (){
 
 <details>
   <summary>Affected files</summary>
-  $(echo $gchanges | awk '{print "<li>", $0, "</li>"}')
+  $(echo "$gchanges" | awk '{print "<li>", $0, "</li>"}')
 </details>" >> .labnotebook/body.html
 
 
