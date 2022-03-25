@@ -76,7 +76,7 @@ updatenotebook (){
 
 
 
-    for i in {1..$nlines}; do
+    for i in $(seq 1 1 $nlines); do
     
         ##------ GET GIT INFO OF THE COMMITS ------##
         # commit sha
@@ -102,9 +102,9 @@ updatenotebook (){
         # choose analysis filename
         echo -e "\ncommit: $comsha \nmessage: $gwhat"
         echo "Which is the analyses file with info about what you've done?" 
-        echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}'
+        echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}'
         read fileans
-        ganalysis=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | \
+        ganalysis=$(echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}' | \
         awk -v fileans="$fileans" '{if ($1 == fileans) {if ($2 != "none") {print "<code><a href=\"" $2 "\" target=\"_blank\">" $2 "</a></code>"} else {print "<code>" $2 "</code>"}}}')
         fi
         
