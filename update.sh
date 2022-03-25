@@ -135,10 +135,10 @@ updatenotebook (){
     done
 
 ##------ UPDATE LASTCOMMIT IN CONFIG ------## 
-sed -i '' "s/LAST_COMMIT=.*/LAST_COMMIT=$comsha/" .labnotebook/config
+sed -i "s/LAST_COMMIT=.*/LAST_COMMIT=$comsha/" .labnotebook/config
 
 ##------ UPDATE LASTDAY in CONFIG ------## 
-sed -i '' "s/LAST_DAY=.*/LAST_DAY=$gday/" .labnotebook/config
+sed -i "s/LAST_DAY=.*/LAST_DAY=$gday/" .labnotebook/config
 
 ##------ DELETE TEMPCOMMIT ------## 
 rm .labnotebook/.tempCommitList.txt

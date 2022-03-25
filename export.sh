@@ -67,9 +67,9 @@ exportnotebook () {
     ##------ EVALUATE IF SHOW_ANALYSIS_FILES AND CHANGE CSS ------## 
     if [[ $SHOW_ANALYSIS_FILES == "yes" ]] 
     then
-    sed -i '' '/analyses-el/,/}/s/\(display: \).*$/\1block;/' .labnotebook/labstyles.css
+    sed -i '/analyses-el/,/}/s/\(display: \).*$/\1block;/' .labnotebook/labstyles.css
     else
-    sed -i '' '/analyses-el/,/}/s/\(display: \).*$/\1none;/' .labnotebook/labstyles.css
+    sed -i '/analyses-el/,/}/s/\(display: \).*$/\1none;/' .labnotebook/labstyles.css
     fi
 
     ##------ ASK IF CSS IN HEAD ------##

@@ -48,7 +48,7 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>$1 Lab notebook</title>" | awk '{print $0}' > .labnotebook/head.html
 
- sed -i '' 's/\\//' .labnotebook/head.html
+ sed -i 's/\\//' .labnotebook/head.html
     
     # Create BODY
     echo "</head>
