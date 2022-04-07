@@ -2,6 +2,13 @@
 
 exportnotebook () {
 
+    ##------ CHECK INPUT ------##
+    if [[ $# -ne 1 ]]
+    then
+    echo "Error: You must enter a filename for the new lab notebook"
+    return
+    fi
+
     ##------ CHECK FILES------##
 
     # .labnotebook
@@ -62,7 +69,7 @@ exportnotebook () {
     fi
 
     ##------ WRITE HEAD ------##
-    cat .labnotebook/head.html > $1
+    cat .labnotebook/head.html >| $1
 
     ##------ EVALUATE IF SHOW_ANALYSIS_FILES AND CHANGE CSS ------## 
     if [[ $SHOW_ANALYSIS_FILES == "yes" ]] 
