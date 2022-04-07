@@ -87,12 +87,12 @@ updatenotebook (){
         then
         gday=$(echo $(git log $comsha^..$comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
         gwhat=$(echo $(git log $comsha --pretty=format:"%s")) # what
-        gmessage=$(echo $(git log $comsha --pretty=format:"%b")) # message
+        gmessage=$(git log $comsha --pretty=format:"%b") # message
         gchanges=$(git log --pretty="format:" --name-status $comsha) # changes
         else
           gday=$(echo $(git log $comsha^..$comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
           gwhat=$(echo $(git log $comsha^..$comsha --pretty=format:"%s")) # what
-          gmessage=$(echo $(git log $comsha^..$comsha --pretty=format:"%b")) # message
+          gmessage=$(git log $comsha^..$comsha --pretty=format:"%b") # message
           gchanges=$(git log --pretty="format:" --name-status $comsha^..$comsha) # changes
         fi
 
@@ -115,10 +115,14 @@ updatenotebook (){
         echo -e "\n<h2 class='day-el'>$gday</h2>" >> .labnotebook/body.html
         fi
 
+        # check if gmessage is empty
+        nwmessage=$(echo $gmessage | wc -w | xargs)
+
+
         # Insert all other info
         echo "
 <h3 class='what-el'>$gwhat</h3>
-<p class='mess-el'>$gmessage</p>
+<p class='mess-el'>$(echo $gmessage | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
 <p class='sha-el'>sha: $comsha</p>
 <p class='analyses-el'>Analysis file: $ganalysis</p>
 
