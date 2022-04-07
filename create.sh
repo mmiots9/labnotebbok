@@ -100,6 +100,10 @@ p {
 .analyses-el {
     display: block;
 }
+
+.analyses-el > li {
+  padding-left: 2em;
+}
     " > .labnotebook/labstyles.css
     
     ##------ ASK FOR GITIGNORE ------##
