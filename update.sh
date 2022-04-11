@@ -104,18 +104,18 @@ updatenotebook (){
         echo "Which is the analyses file with info about what you've done?" 
         echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}'
         read fileans
-        fileans2=$(echo $fileans | xargs -n 1)
-        nlines=$(echo $fileans2 | wc -l | xargs)
+        fileans2=$(echo "$fileans" | xargs -n 1)
+        nlines=$(echo "$fileans2" | wc -l | xargs)
 
         ganalysis=''
 
         for i in $(seq 1 1 $nlines)
         do
 
-        oneans=$(echo $fileans2 | sed -n "$i"p)
-        ganalysisnew=$(echo $gchanges | awk  '{print NR, $2} END{print NR+1, "none"}' | \
+        oneans=$(echo "$fileans2" | sed -n "$i"p)
+        ganalysisnew=$(echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}' | \
                 awk -v fileans="$oneans" '{if ($1 == fileans) {if ($2 != "none") {print "<li><code><a href=\"" $2 "\" target=\"_blank\">" $2 "</a></code>"} else {print "<code>" $2 "</code></li>"}}}')
-        ganalysis=$(echo -e $ganalysis "\n" $ganalysisnew)
+        ganalysis=$(echo -e "$ganalysis" "\n" "$ganalysisnew")
         done
         fi
         
@@ -133,10 +133,10 @@ updatenotebook (){
         # Insert all other info
         echo "
 <h3 class='what-el'>$gwhat</h3>
-<p class='mess-el'>$(echo $gmessage | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
+<p class='mess-el'>$(echo "$gmessage" | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
 <p class='sha-el'>sha: $comsha</p>
 <div class='analyses-el'>Analysis file:
-$(echo $ganalysis)
+$(echo "$ganalysis")
 </div>
 <br>
 <details>
