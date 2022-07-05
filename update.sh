@@ -85,7 +85,7 @@ updatenotebook (){
         # get all info
         if [[ isno -eq 1 ]]
         then
-        gday=$(echo $(git log $comsha^..$comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
+        gday=$(echo $(git log $comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
         gwhat=$(echo $(git log $comsha --pretty=format:"%s")) # what
         gmessage=$(git log $comsha --pretty=format:"%b") # message
         gchanges=$(git log --pretty="format:" --name-status $comsha) # changes
