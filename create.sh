@@ -104,7 +104,10 @@ p {
 .analyses-el > li {
   padding-left: 2em;
 }
-    " > .labnotebook/labstyles.css
+.sha-el {
+  margin-top: 1em;
+}
+" > .labnotebook/labstyles.css
     
     ##------ ASK FOR GITIGNORE ------##
 
