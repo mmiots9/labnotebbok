@@ -2,7 +2,7 @@
 
 createnotebook (){
     ##------ CHECK INPUT ------##
-    if [[ $# -ne 1 ]]
+    if [[ $# -eq 0 ]]
     then
     echo "Error: You must enter a filename for the new lab notebook"
     return
@@ -31,13 +31,13 @@ createnotebook (){
     ##------ POPULATE FOLDER ------##
     
     # Create config
-    echo -e "NOTEBOOK_NAME=$1
+    echo -e "NOTEBOOK_NAME='$*'
 LAB_AUTHOR=\"$aut\"
 LAST_COMMIT=no
 LAST_DAY=no
-ASK_ANALYSIS_FILES=yes
 SHOW_ANALYSIS_FILES=yes
-LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config 
+LAB_CSS=.labnotebook/labstyles.css
+ANALYSIS_EXT=('.html')" > .labnotebook/config 
 
     # Create HEAD
     echo "<\!DOCTYPE html>
@@ -46,23 +46,38 @@ LAB_CSS=.labnotebook/labstyles.css" > .labnotebook/config
     <meta charset=\"UTF-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>$1 Lab notebook</title>" | awk '{print $0}' > .labnotebook/head.html
+    <title>$1 Lab notebook</title>
+</head>" | awk '{print $0}' > .labnotebook/head.html
 
  sed -i 's/\\//' .labnotebook/head.html
     
     # Create BODY
-    echo "</head>
-<body>
+    echo "<body>
+<header>
 <h1 id='labtitle'>$1 lab notebook</h1>
 <p id='creationdate'>Created on: $today</p>
-<p id='labauthor'>Author: $aut</p>" > .labnotebook/body.html
+<p id='labauthor'>Author: $aut</p>
+</header>
+<main>
+
+</main>
+</body>" > .labnotebook/body.html
     
     # Create FOOTER
-    echo "</body>
-</html>" > .labnotebook/footer.html
+    echo "</html>" > .labnotebook/footer.html
 
     # Create CSS
     echo -e "
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+    padding: 1rem;
+}
+
 h1 {
     color: red;
     text-align: center;
@@ -87,9 +102,11 @@ details {
 	display: inline
 }
 
-details > li {
-  padding-left: 2em;
+details li {
+  cursor: text;
+  padding-left: 0.5em;
   font-size: 1em;
+  margin-left: 3em;
 }
 
 p {
@@ -101,9 +118,16 @@ p {
     display: block;
 }
 
-.analyses-el > li {
-    padding-left: 2em;
+.analyses-el li {
+    margin-left: 3em;
+    padding-left: 0.5em;
 }
+
+.commit-el {
+    padding: 1rem;
+}
+
+
 .sha-el {
   margin-top: 1em;
 }

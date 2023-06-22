@@ -9,14 +9,14 @@ updatenotebook (){
     ##------ CHECK FILES------##
 
     # .labnotebook
-    if [[ $(find -d .labnotebook 2>&1 | grep -v 'No such file' | wc -l) -eq 0 ]]
+    if [ ! -d ".labnotebook" ]; 
     then
     echo -e "$red Error: There is no .labnotebook folder in the current working directory. \nPlease go to the folder where .labnotebook is."
     return
     fi
 
     # config
-    if [[ $(find .labnotebook -iname config 2>&1 | grep -v 'No such file' | wc -l) -eq 0 ]]
+    if [ ! -f ".labnotebook/config" ];
     then
     echo -e "$red Error: There is no config file in .labnotebook folder. Please provide config file"
     return
@@ -39,10 +39,22 @@ updatenotebook (){
     then 
       if [[ $(git status | grep "Changes to be committed:" | wc -l | xargs) != 0 ]]
       then
-      echo -e "$red Error: you have staged files to be committed. This is incompatible with updatenotebook. \n Please commit those changes or restore the files prior to launch this function"
+      echo -e "$red Error: you have staged files to be committed. This is incompatible with updatenotebook. \n Please commit those changes, restore the files or stage them prior to launch this function"
       return
       fi
     fi
+
+    ##------ FORCE UPDATE ------## 
+    if [[ $1 == "--force-update" ]] 
+    then
+      # reset LAST_COMMIT and LAST_DAY
+      LAST_COMMIT=no
+      LAST_DAY=no 
+
+      # remove content in main
+      sed -i '/<main>/,/<\/main>/ {//!d}' .labnotebook/body.html
+    fi
+
 
     ##------ CHECK LAST COMMIT AND CREATE TEMP WITH COMMITS------##
     if [[ "$LAST_COMMIT" == "no" ]]
@@ -53,8 +65,8 @@ updatenotebook (){
         # Check if $LASTCOMMIT is in commit history
         if [[ $(git log --author='^(?!labnotebook).*$' --perl-regexp --oneline | awk '{print $1}' | grep $LAST_COMMIT | wc -l) -eq 0 ]]
         then
-        echo -e "$red Error: Last commit used for the labnotebook ($LAST_COMMIT) is not in current git log.$ncol
-        It is possible that you have changed commit history. Please check your git log and insert the commit sha to use in config file.
+        echo -e "$red Error: Last commit used for the labnotebook ($LAST_COMMIT) is not in current git log history.$ncol
+        It is possible that you have changed commit history. Please check your git log and insert the commit sha to use in config file or force the update to start again from the beginning of the git history using updatenotebook --force-update
         "
         return
         fi
@@ -64,61 +76,88 @@ updatenotebook (){
     fi
     
 
-    # Check if file is empty: LAST_COMMIT is the last commit yet
-    nlines=$(cat .labnotebook/.tempCommitList.txt | wc -l | xargs)
+    # Check if LAST_COMMIT is the last commit yet
+    nlines_commits=$(cat .labnotebook/.tempCommitList.txt | wc -l | xargs)
 
-    if [[ nlines -eq 0 ]]
+    if [[ nlines_commits -eq 0 ]]
     then
     echo -e "$yellow Warning: LAST_COMMIT is already the last commit in history"
     rm .labnotebook/.tempCommitList.txt
     return
     fi
 
+    ##------ REMOVE MAIN AND BODY CLOSING TAG ------##
+    sed -i  '/<\/main>/,/<\/body>/d' .labnotebook/body.html
 
 
-    for i in $(seq 1 1 $nlines); do
+    # Loop through commits
+    while read -r comsha
+    do
     
         ##------ GET GIT INFO OF THE COMMITS ------##
-        # commit sha
-        comsha=$(head -n $i .labnotebook/.tempCommitList.txt | tail -n 1)
 
         # get all info
         if [[ isno -eq 1 ]]
         then
-        gday=$(echo $(git log $comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
+        gday=$(echo $(git log $comsha --pretty=format:'%cI' | sed 's/T.*//' )) # day
         gwhat=$(echo $(git log $comsha --pretty=format:"%s")) # what
-        gmessage=$(git log $comsha --pretty=format:"%b") # message
-        gchanges=$(git log --pretty="format:" --name-status $comsha) # changes
+        gmessage=$(echo $(git log $comsha --pretty=format:"%b")) # message
+        gchanges=$(git log --pretty="format:" --name-status $comsha | awk '{if ($3) print $1 "&nbsp;&nbsp;&nbsp;&nbsp;", $2 " -> " $3; else print $1 "&nbsp;&nbsp;&nbsp;&nbsp;", $2}') # changes
         else
-          gday=$(echo $(git log $comsha^..$comsha --pretty=format:'%cI' | sed 's/T.*//')) # day
+          gday=$(echo $(git log $comsha^..$comsha --pretty=format:'%cI' | sed 's/T.*//' )) # day
           gwhat=$(echo $(git log $comsha^..$comsha --pretty=format:"%s")) # what
           gmessage=$(git log $comsha^..$comsha --pretty=format:"%b") # message
-          gchanges=$(git log --pretty="format:" --name-status $comsha^..$comsha) # changes
+          gchanges=$(git log --pretty="format:" --name-status $comsha^..$comsha | awk '{if ($3) print $1 "&nbsp;&nbsp;&nbsp;&nbsp;", $2 " -> " $3; else print $1 "&nbsp;&nbsp;&nbsp;&nbsp;", $2}') # changes
         fi
 
         # check if SHOW_ANALYSIS_FILE
-        if [[ $ASK_ANALYSIS_FILES == "yes" ]]
-        then
-        # choose analysis filename
-        echo -e "\ncommit: $comsha \nmessage: $gwhat"
-        echo "Which is the analyses file with info about what you've done?" 
-        echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}'
-        read fileans
-        fileans2=$(echo "$fileans" | xargs -n 1)
-        nlines=$(echo "$fileans2" | wc -l | xargs)
 
         ganalysis=''
 
-        for i in $(seq 1 1 $nlines)
-        do
+        analysis_files=()
 
-        oneans=$(echo "$fileans2" | sed -n "$i"p)
-        ganalysisnew=$(echo "$gchanges" | awk  '{print NR, $2} END{print NR+1, "none"}' | \
-                awk -v fileans="$oneans" '{if ($1 == fileans) {if ($2 != "none") {print "<li><code><a href=\"" $2 "\" target=\"_blank\">" $2 "</a></code>"} else {print "<code>" $2 "</code></li>"}}}')
-        ganalysis=$(echo -e "$ganalysis" "\n" "$ganalysisnew")
-        done
-        fi
+        # Capture the output of the pipeline into a variable using process substitution
+        while IFS= read -r filename; do
+          excluded=0  # Numeric flag to track if the filename is excluded
         
+          # Check the presence of .labignore and ignore those files
+          if [ -f '.labignore' ]; then
+            exclude_patterns=()
+            while IFS= read -r pattern; do
+              exclude_patterns+=("$pattern")
+            done < ".labignore"
+        
+            for pattern in "${exclude_patterns[@]}"; do
+              if [[ "$filename" =~ $pattern ]]; then
+                excluded=1
+                break
+              fi
+            done
+          fi
+        
+          # Only add the filename if it's not excluded and matches the desired extensions
+          if [[ $excluded -eq 0 ]]; then
+            for ext in "${ANALYSIS_EXT[@]}"; do
+              if [[ "$filename" == *"$ext" ]]; then
+                analysis_files+=("$filename")  # Add the filename to the array
+                break
+              fi
+            done
+          fi
+        done < <(echo "$gchanges" | awk '$1 !~ /^D/ {if ($3) print $3; else print $2}')
+
+        # Check if there are no analysis files and insert none, otherwhise loop through files and create list
+        if [[ ${#analysis_files[@]} -eq 0 ]]; then
+          ganalysis='<code>none</code>'
+        else
+          ganalysis='<ul class="analysis_list">'
+          for file in "${analysis_files[@]}"; do
+            ganalysisnew=$(echo "<li><code><a href='$file'>$file</a></code></li>")
+            ganalysis=$(echo -e $ganalysis "\n" $ganalysisnew)
+          done
+          ganalysis=$(echo -e $ganalysis "\n</ul>")
+        fi
+
         ##------ WRITE BODY ------##
         # Insert day if is different
         if [[ $LAST_DAY != $gday ]] 
@@ -132,30 +171,43 @@ updatenotebook (){
 
         # Insert all other info
         echo "
+<div class='commit-el' id='$comsha'>
 <h3 class='what-el'>$gwhat</h3>
-<p class='mess-el'>$(echo "$gmessage" | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
+<p class='mess-el'>$(echo $gmessage | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
 <p class='sha-el'>sha: $comsha</p>
-<div class='analyses-el'>Analysis file:
-$(echo "$ganalysis")
+<div class='analyses-el'>Analysis file/s:
+$(echo $ganalysis)
 </div>
 <br>
 <details>
-  <summary>Affected files</summary>
+  <summary>Changed files</summary>
+  <ul>
   $(echo "$gchanges" | awk '{print "<li>", $0, "</li>"}')
-</details>" >> .labnotebook/body.html
+  </ul>
+</details>
+</div>" >> .labnotebook/body.html
 
 
         # UPDATE DATE
         LAST_DAY=$gday
 
         isno=0
-    done
 
-##------ UPDATE LASTCOMMIT IN CONFIG ------## 
-sed -i "s/LAST_COMMIT=.*/LAST_COMMIT=$comsha/" .labnotebook/config
+        ##------ UPDATE LASTCOMMIT IN CONFIG ------## 
+        sed -i "s/LAST_COMMIT=.*/LAST_COMMIT=$comsha/" .labnotebook/config
 
-##------ UPDATE LASTDAY in CONFIG ------## 
-sed -i "s/LAST_DAY=.*/LAST_DAY=$gday/" .labnotebook/config
+        ##------ UPDATE LASTDAY in CONFIG ------## 
+        sed -i "s/LAST_DAY=.*/LAST_DAY=$gday/" .labnotebook/config
+
+    done < .labnotebook/.tempCommitList.txt
+
+##------ INSERT MAIN AND BODY CLOSING TAG ------##
+echo "</main>" >> .labnotebook/body.html
+echo "</body>" >> .labnotebook/body.html
+
+
+
+
 
 ##------ DELETE TEMPCOMMIT ------## 
 rm .labnotebook/.tempCommitList.txt
@@ -171,3 +223,4 @@ fi
 
 
 }
+
