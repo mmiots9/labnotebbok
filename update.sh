@@ -173,10 +173,10 @@ updatenotebook (){
         echo "
 <div class='commit-el' id='$comsha'>
 <h3 class='what-el'>$gwhat</h3>
-<p class='mess-el'>$(echo $gmessage | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
+<p class='mess-el'>$(echo "$gmessage" | awk -v nwmessage="$nwmessage"  '{if (nwmessage != "0") {print $0, "<br>"}}')</p>
 <p class='sha-el'>sha: $comsha</p>
 <div class='analyses-el'>Analysis file/s:
-$(echo $ganalysis)
+$(echo "$ganalysis")
 </div>
 <br>
 <details>
