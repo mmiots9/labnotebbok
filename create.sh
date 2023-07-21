@@ -46,7 +46,7 @@ ANALYSIS_EXT=('.html')" > .labnotebook/config
     <meta charset=\"UTF-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>$1 Lab notebook</title>
+    <title>$* Lab notebook</title>
 </head>" | awk '{print $0}' > .labnotebook/head.html
 
  sed -i 's/\\//' .labnotebook/head.html
@@ -54,7 +54,7 @@ ANALYSIS_EXT=('.html')" > .labnotebook/config
     # Create BODY
     echo "<body>
 <header>
-<h1 id='labtitle'>$1 lab notebook</h1>
+<h1 id='labtitle'>$* lab notebook</h1>
 <p id='creationdate'>Created on: $today</p>
 <p id='labauthor'>Author: $aut</p>
 </header>
