@@ -149,7 +149,7 @@ updatenotebook (){
         else
           ganalysis='<ul class="analysis_list">'
           for file in "${analysis_files[@]}"; do
-            ganalysisnew=$(echo "<li><code><a href='$file'>$file</a></code></li>")
+            ganalysisnew=$(echo "<li><code><a href='$file' target='_blank'>$file</a></code></li>")
             ganalysis=$(echo -e $ganalysis "\n" $ganalysisnew)
           done
           ganalysis=$(echo -e $ganalysis "\n</ul>")
