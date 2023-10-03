@@ -34,14 +34,12 @@ updatenotebook (){
     esac
     done
 
-    ##------ EVAL IF THERE ARE STAGED FILES WHILE LAB_IGNORE == "NO" AND STOP THE FUNCTION------## 
-    if [[ "$LAB_IGNORE" == "no" ]]
-    then 
-      if [[ $(git status | grep "Changes to be committed:" | wc -l | xargs) != 0 ]]
-      then
-      echo -e "$red Error: you have staged files to be committed. This is incompatible with updatenotebook. \n Please commit those changes, restore the files or stage them prior to launch this function"
-      return
-      fi
+    ##------ EVAL IF THERE ARE STAGED FILES AND STOP THE FUNCTION------## 
+
+    if [[ $(git status | grep "Changes to be committed:" | wc -l | xargs) != 0 ]]
+    then
+    echo -e "$red Error: you have staged files to be committed. This is incompatible with updatenotebook. \n Please commit those changes, restore the files or stage them prior to launch this function"
+    return
     fi
 
     ##------ FORCE UPDATE ------## 
@@ -205,22 +203,12 @@ $(echo "$ganalysis")
 echo "</main>" >> .labnotebook/body.html
 echo "</body>" >> .labnotebook/body.html
 
-
-
-
-
 ##------ DELETE TEMPCOMMIT ------## 
 rm .labnotebook/.tempCommitList.txt
 
-##------ EVAL IF COMMIT ------## 
-if [[ "$LAB_IGNORE" == "no" ]]
-then 
-
-# add .labnotebook files
+##------ COMMIT CHANGES IN LABNOTEBOOK ------## 
 git add .labnotebook/*
 GIT_COMMITTER_NAME="labnotebook" GIT_COMMITTER_EMAIL="labnotebook@email.com" git commit --author="labnotebook <labnotebook@email.com>" -m "update notebook" >/dev/null
-fi
-
 
 }
 

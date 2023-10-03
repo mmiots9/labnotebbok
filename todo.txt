@@ -1,0 +1,11 @@
+INDEX.HTML
+[ ] create index.html model
+
+CREATENOTEBOOK
+[ ] new folder with index.html from model filled with useful info
+
+UPDATENOTEBOOK
+[ ] create oneline.html with all oneline git commits
+[ ] create calendar.html with all dates and number of commits (o provare a capire come fare a farlo a mo di calendario)
+[ ] create history.html with all commit history (as it is now, but with links to all the files)
+[ ] create filetrees.html with all files with commits in which they have been edited (maybe a big tree)
