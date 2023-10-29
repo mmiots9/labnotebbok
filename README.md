@@ -1,5 +1,8 @@
 <h1 align="center">Labnotebook 📔🖥</h1>
 
+| :warning: I have moved this repo to a python package. <br> Please refer to [mmiots9/pylabnotebook](https://github.com/mmiots9/pylabnotebook) for the most up to date version. This repo will not be updated anymore. |
+| -------- | 
+
 This project aims to help bioinformaticians in creating the so called "Laboratory notebook" automatically, thanks to git workflow manager.
 
 **IMPORTANT**: this tool is based on git and its application. Based on git history, it will create an html notebook divided by date and commit.
